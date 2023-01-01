@@ -44,6 +44,7 @@ def _prepare_environment() -> None:
             ("reverse_host", utils.reverse_host),
             ("rsa_import_key", utils.rsa_import_key),
             ("rsa_private_key", utils.rsa_private_key),
+            ("url_part", utils.url_part),
         ],
     )
     # Template variables

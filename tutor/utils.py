@@ -10,6 +10,7 @@ import subprocess
 import sys
 from functools import lru_cache
 from typing import List, Tuple
+from urllib.parse import urlparse
 
 import click
 from Crypto.Protocol.KDF import bcrypt, bcrypt_check
@@ -82,6 +83,15 @@ def common_domain(d1: str, d2: str) -> str:
         else:
             break
     return ".".join(common[::-1])
+
+def url_part(url, part):
+    """
+    Return the part of the url according to
+    `urllib's urlparse <https://docs.python.org/3/library/urllib.parse.html>`
+    Ex.1: url_part('http://local.overhang.io/','scheme') -> 'https'
+    Ex.2: url_part('https://local.overhang.io/','netloc') -> 'local.overhang.io'
+    """
+    return getattr(urlparse(url), part)
 
 
 def reverse_host(domain: str) -> str:

@@ -74,6 +74,9 @@ def images_command() -> None:
     "--no-cache", is_flag=True, help="Do not use cache when building the image"
 )
 @click.option(
+    "--host-network", is_flag=True, help="Use the host's network when building the image. (same as: --docker-arg \'--network=host\')"
+)
+@click.option(
     "-a",
     "--build-arg",
     "build_args",
@@ -102,6 +105,7 @@ def build(
     context: Context,
     image_names: t.List[str],
     no_cache: bool,
+    host_network: bool,
     build_args: t.List[str],
     add_hosts: t.List[str],
     target: str,
@@ -111,6 +115,8 @@ def build(
     command_args = []
     if no_cache:
         command_args.append("--no-cache")
+    if host_network or config.get('BUILD_USE_HOST_NETWORK'):
+        command_args += ["--network", "host"]
     for build_arg in build_args:
         command_args += ["--build-arg", build_arg]
     for add_host in add_hosts:

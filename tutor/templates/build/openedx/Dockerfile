@@ -2,6 +2,14 @@
 FROM docker.io/ubuntu:20.04 as minimal
 LABEL maintainer="Overhang.io <contact@overhang.io>"
 
+    {% if APT_PROXY_URL -%}
+    RUN echo 'Acquire::{{ APT_PROXY_URL | url_part('scheme') }}::Proxy "{{ APT_PROXY_URL }}";' \
+        > /etc/apt/apt.conf.d/00proxy 
+    {%- endif %}
+
+ENV PIP_INDEX_URL={{ PIP_INDEX_URL }} \
+    PIP_TRUSTED_HOST={{ PIP_INDEX_URL | url_part('netloc') }}
+
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
     apt install -y build-essential curl git language-pack-en
@@ -239,6 +247,14 @@ CMD ./manage.py $SERVICE_VARIANT runserver 0.0.0.0:8000
 
 ###### Final image with production cmd
 FROM production as final
+
+user root
+{% if APT_PROXY_URL -%}
+RUN rm /etc/apt/apt.conf.d/00proxy
+{%- endif %}
+user app
+ENV PIP_INDEX_URL= \
+    PIP_TRUSTED_HOST=
 
 # Run server
 CMD uwsgi \

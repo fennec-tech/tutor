@@ -4,6 +4,9 @@ x-openedx-service:
   &openedx-service
   image: {{ DOCKER_IMAGE_OPENEDX_DEV }}
   build:
+    {%- if BUILD_USE_HOST_NETWORK %}
+    network: host
+    {%- endif %}
     context: ../build/openedx/
     target: development
     args:
